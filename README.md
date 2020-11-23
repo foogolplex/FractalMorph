@@ -1,2 +1,2 @@
 # emerge
-A game engine written in SDL2/C++
+A game engine written in SDL2/C++. Currently all that's implemented in the animation of a julia fractal and a static mandelbrot fractal. The animation of the julia fractal shows an interesting process of biomorphic mitosis. Meaning that this julia fractal resembles/models cellular mitosis when iterated over the same function where only the constant changes. The colors used in the fractals are randomly selected.
