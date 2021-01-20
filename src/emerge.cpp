@@ -60,7 +60,7 @@ SDL_Surface* emerge::load_surface(std::string file_path)
 	SDL_Surface* loaded_surface;
 
 	optimized_surface = NULL;
-	loaded_surface = IMG_Load(file_path.c_str());
+	/*loaded_surface = IMG_Load(file_path.c_str());
 	if (loaded_surface == NULL)
 	{
 		SDL_Log("SDL was unable to load an image: %s", SDL_GetError());
@@ -72,6 +72,7 @@ SDL_Surface* emerge::load_surface(std::string file_path)
 			SDL_Log("SDL was unable to convert a surface: %s", SDL_GetError());
 		SDL_FreeSurface(loaded_surface);
 	}
+	*/
 	return optimized_surface;
 }
 void emerge::load_media()
