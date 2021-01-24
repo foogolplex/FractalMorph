@@ -11,8 +11,8 @@ emerge::emerge()
 	background_image = NULL;
 	window_surface = NULL;
 	player_sprite = NULL;
-	window_width = 800;
-	window_height = 800;
+	window_width = 1920;
+	window_height = 1080;
 	player_x = 0;
 	player_y = 0;
 	julia_radius = 4;
@@ -29,13 +29,13 @@ int emerge::init_sdl()
 	}
 	
 	window = SDL_CreateWindow(
-		"emerge",
+		"morph",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		window_width,
 		window_height,
 		SDL_WINDOW_RESIZABLE
-	);
+		);
 	if (!window)
 	{
 		clean();
