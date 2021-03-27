@@ -1,4 +1,4 @@
-# Morph
+# morph
 Currently all that's implemented is the animation of a julia fractal and the static generation of a mandelbrot fractal. The colors are randomly selected.
 
 
