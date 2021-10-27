@@ -1,12 +1,12 @@
-#include "emerge.h"
+#include "morph.h"
 
 int main(int ac, char* av[])
 {
-	emerge* instance;
+	Morph* instance;
 
-	instance = new emerge();
+	instance = new Morph();
 	if (instance->init_sdl() != 0)
 		return 0;
-	instance->game_loop();
+	instance->main_loop();
 	return 0;
 }
