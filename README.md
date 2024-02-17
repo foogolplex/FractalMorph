@@ -1,15 +1,22 @@
-## Dependencies:
+# Dependencies:
 SDL2, SDL2_image, g++
 
-Ubuntu 20.04.1: `sudo apt-get install libsdl2-dev libsdl2-image-dev g++ git`
+Ubuntu 20.04.1: `sudo apt-get install libsdl2-dev libsdl2-image-dev g++`
 
-## Download:
-`cd ./download/location && git clone https://github.com/foogolplex/morph.git`
+# Clone Repo:
+`git clone https://github.com/foogolplex/morph.git && cd morph`
 
-## Compile:
-After verifying you are in the /morph/src/ directory: `g++ -o main main.cpp morph.cpp -lSDL2 -lSDL2_image`
+# Compile:
+`make`
 
-## TODO:
-Implement: multithreading, UI, colors that correspond with eachother and depth, effects
+# Implement: 
+ - ~~Multithreading~~ 2/17/24
+ - UI:
+   - RGB sliders
+   - Fractal selector
+   - Animation speed
+ - ~~Colors that correspond with eachother and depth~~ 2/17/24
+ - Effects
+ - Optimize multithreading and animation performance
 
-![Alt text](morph_screenshot.png?raw=true)
+![Alt text](Animation.gif?raw=true)
