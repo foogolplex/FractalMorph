@@ -3,8 +3,8 @@
 Morph::Morph()
 {
 	window = NULL;
-	window_width = 1920;
-	window_height = 1080;
+	window_width = 600;
+	window_height = 400;
 	julia_radius = 4;
 	constant = -2;
 }
@@ -23,8 +23,7 @@ int Morph::init_sdl()
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		window_width,
-		window_height,
-		SDL_WINDOW_RESIZABLE
+		window_height, 0
 		);
 	if (!window)
 	{
@@ -40,29 +39,23 @@ void Morph::clean()
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 }
-void Morph::draw_julia()
-{
-	float scaled_x, scaled_y;
-	int iteration, max_iteration;
-	float xtemp;
-	
-	iteration = 0;
-	max_iteration = 100;
-	julia_radius = 2;
-	for (int py = 0; py < window_height; py += 1)
+void Morph::renderSlice(int start_y, int end_y, SDL_Renderer* renderer){
+	std::lock_guard<std::mutex> lock(rendererMutex);
+	for (int py = start_y; py < end_y; py += 1)
 	{
 		for (int px = 0; px < window_width; px += 1)
 		{
-			scaled_x = ((julia_radius * 2.0f) / (float)window_width) * 
-                (float)px - julia_radius;
-			scaled_y = ((julia_radius * 2.0f) / (float)window_height) * 
-                (float)py - julia_radius;
+			float scaled_x = ((julia_radius * 2.0f) / (float)window_width) * 
+				(float)px - julia_radius;
+			float scaled_y = ((julia_radius * 2.0f) / (float)window_height) * 
+				(float)py - julia_radius;
 			
-			iteration = 0;
+			int iteration = 0;
+			int max_iteration = 100;
 			while (iteration < max_iteration && scaled_x * scaled_x + scaled_y
-                    * scaled_y <= julia_radius * julia_radius)
+					* scaled_y <= julia_radius * julia_radius)
 			{
-				xtemp = scaled_x * scaled_x - scaled_y * scaled_y;
+				float xtemp = scaled_x * scaled_x - scaled_y * scaled_y;
 				scaled_y = 2.0f * scaled_x * scaled_y + constant;
 				scaled_x = xtemp + constant;
 				iteration += 1;
@@ -74,13 +67,36 @@ void Morph::draw_julia()
 			}
 			else
 			{
-				SDL_SetRenderDrawColor(renderer, colors[iteration].r, 
-                        colors[iteration].g, colors[iteration].b, 255);
+				SDL_SetRenderDrawColor(renderer, 0, 
+						0, iteration * 4, 255);
 				SDL_RenderDrawPoint(renderer, px, py);
 			}
 		}
-	}	
-	SDL_RenderPresent(renderer);
+	}
+	
+}
+void Morph::draw_julia()
+{
+	float scaled_x, scaled_y;
+	const int num_threads = std::thread::hardware_concurrency();
+	std::vector<std::thread> threads;
+	julia_radius = 2;
+
+	int slice_height = window_height / num_threads;
+    int start_y = 0;
+
+	// Attempt to distribute work across threads to render proportionate slices
+	for (int i = 0; i < num_threads; ++i) {
+        int end_y = (i == num_threads - 1) ? window_height : start_y + slice_height;
+        threads.emplace_back([=]() { renderSlice(start_y, end_y, renderer); });
+        start_y = end_y;
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    SDL_RenderPresent(renderer);
 }
 void Morph::draw_mandel()
 {
@@ -108,28 +124,15 @@ void Morph::draw_mandel()
 				y2 = y * y;
 				iteration += 1;
 			}
-			SDL_SetRenderDrawColor(renderer, colors[iteration].r, 
-                    colors[iteration].g, colors[iteration].b, colors[iteration].a);
+			SDL_SetRenderDrawColor(renderer, iteration, 
+                    iteration, iteration, 255);
 			SDL_RenderDrawPoint(renderer, px, py);
 		}
 	}	
 	SDL_RenderPresent(renderer);
 }
-void Morph::gen_rand_colors()
-{
-    // generate palette of colors whose value changes with the index
-	for (int i = 0; i < 1000; i += 1)
-	{
-		colors[i].r = rand() % 255;
-        colors[i].g = 0; 
-		colors[i].b = 0; 
-		colors[i].a = 255;
-	}
-}
 int Morph::main_loop()
 {
-	srand(time(NULL));
-	gen_rand_colors();	
 	draw_julia();
 	while (1)
 	{
@@ -146,8 +149,6 @@ int Morph::main_loop()
 				switch (e.key.keysym.sym)
 				{	
 				case SDLK_SPACE:
-					srand(time(NULL));
-					gen_rand_colors();
 					draw_julia();
 				}
 			}
@@ -155,8 +156,6 @@ int Morph::main_loop()
 		constant += 0.005;
 		if (constant > 2)
 		{
-			srand(time(NULL));
-			gen_rand_colors();
 			constant = -2;
 		}
 		draw_julia();
