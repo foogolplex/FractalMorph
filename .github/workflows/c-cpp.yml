@@ -21,4 +21,4 @@ jobs:
       run: cd ./src/ && make
 
     - name: run
-      run: ./main
+      run: ./src/main
