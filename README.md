@@ -1,3 +1,5 @@
+[![C/C++ CI](https://github.com/foogolplex/Morph/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/foogolplex/Morph/actions/workflows/c-cpp.yml)
+
 # Dependencies:
 SDL2, SDL2_image, g++
 
